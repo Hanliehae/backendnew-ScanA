@@ -1,4 +1,5 @@
-from app.extensions import db
+from _.extensions import db
+
 
 class Mahasiswa(db.Model):
     __tablename__ = 'mahasiswa'
