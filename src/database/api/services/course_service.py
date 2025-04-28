@@ -2,20 +2,20 @@ from src.database.config import SessionLocal
 from src.database.models import Course
 
 
-def create_course(semester, course_code, academic_year, course_name):
+def create_course(semester, course_id, academic_year, name):
     session = SessionLocal()
 
     existing_course = session.query(Course).filter(
-        Course.course_code == course_code, Course.academic_year == academic_year).first()
+        Course.course_id == course_id, Course.academic_year == academic_year).first()
     if existing_course:
         session.close()
         return None, "Course with this code and academic year already exists."
 
     new_course = Course(
         semester=semester,
-        course_code=course_code,
+        course_id=course_id,
         academic_year=academic_year,
-        course_name=course_name
+        name=name
     )
 
     session.add(new_course)
@@ -29,7 +29,7 @@ def create_course(semester, course_code, academic_year, course_name):
 def get_all_courses():
     session = SessionLocal()
     courses = session.query(Course).order_by(
-        Course.academic_year.desc(), Course.course_name.asc()).all()
+        Course.academic_year.desc(), Course.name.asc()).all()
     session.close()
     return courses
 

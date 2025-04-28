@@ -10,12 +10,12 @@ course_bp = Blueprint('course', __name__, url_prefix='/api/courses')
 def create_course():
     data = request.get_json()
     semester = data.get('semester')  # "ganjil" / "genap"
-    course_code = data.get('course_code')
+    course_id = data.get('course_id')
     academic_year = data.get('academic_year')
-    course_name = data.get('course_name')
+    name = data.get('name')
 
     course, error = course_service.create_course(
-        semester, course_code, academic_year, course_name)
+        semester, course_id, academic_year, name)
     if error:
         return {"message": error}, 400
 
@@ -24,9 +24,9 @@ def create_course():
         "course": {
             "id": course.id,
             "semester": course.semester,
-            "course_code": course.course_code,
+            "course_id": course.course_id,
             "academic_year": course.academic_year,
-            "course_name": course.course_name
+            "name": course.name
         }
     }, 201
 
@@ -38,9 +38,9 @@ def list_courses():
     course_list = [{
         "id": c.id,
         "semester": c.semester,
-        "course_code": c.course_code,
+        "course_id": c.course_id,
         "academic_year": c.academic_year,
-        "course_name": c.course_name
+        "name": c.name
     } for c in courses]
 
     return {"courses": course_list}, 200
@@ -57,8 +57,8 @@ def get_course_detail(course_id):
         "course": {
             "id": course.id,
             "semester": course.semester,
-            "course_code": course.course_code,
+            "course_id": course.course_id,
             "academic_year": course.academic_year,
-            "course_name": course.course_name
+            "name": course.name
         }
     }, 200

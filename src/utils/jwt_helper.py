@@ -6,6 +6,19 @@ from src.database.config import JWT_SECRET_KEY, JWT_ALGORITHM
 from src.database.models import User
 from src.database.config import SessionLocal
 
+# jwt_helper.py
+
+
+def student_required(f):
+    @wraps(f)
+    @login_required
+    def decorated(*args, **kwargs):
+        user = request.current_user
+        if user.role != "user":
+            return {"message": "Student privilege required"}, 403
+        return f(*args, **kwargs)
+    return decorated
+
 
 def create_access_token(data: dict, expires_delta: timedelta = timedelta(hours=5)):
     to_encode = data.copy()

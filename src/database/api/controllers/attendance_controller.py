@@ -38,7 +38,7 @@ def get_attendance_by_meeting(meeting_id):
     attendances = attendance_service.get_attendance_by_meeting(meeting_id)
 
     attendance_list = [{
-        "student_id": a.student_id,
+        "student_id": a.class_student.student_id,  # << akses lewat relasi
         "check_in_time": a.check_in_time.strftime('%Y-%m-%d %H:%M:%S') if a.check_in_time else None,
         "check_out_time": a.check_out_time.strftime('%Y-%m-%d %H:%M:%S') if a.check_out_time else None,
         "status": a.status

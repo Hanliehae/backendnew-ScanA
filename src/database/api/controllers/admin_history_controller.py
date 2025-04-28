@@ -9,7 +9,6 @@ admin_history_bp = Blueprint(
 @admin_history_bp.route('/', methods=['GET'])
 @admin_required
 def all_attendance_history():
-    # Filter opsional dari query params
     course_id = request.args.get('course_id', type=int)
     student_id = request.args.get('student_id', type=int)
     semester = request.args.get('semester')
@@ -27,8 +26,9 @@ def all_attendance_history():
     result = []
     for attendance in attendance_list:
         meeting = attendance.meeting
-        course = meeting.course
-        student = attendance.student
+        class_ = meeting.class_
+        course = class_.course
+        student = attendance.class_student.student
 
         result.append({
             "student_id": student.id,
@@ -38,10 +38,10 @@ def all_attendance_history():
             "semester": course.semester,
             "academic_year": course.academic_year,
             "meeting_date": meeting.date.strftime('%Y-%m-%d'),
-            "meeting_start_time": meeting.start_time.strftime('%H:%M'),
-            "meeting_end_time": meeting.end_time.strftime('%H:%M'),
-            "check_in_time": attendance.check_in.strftime('%H:%M') if attendance.check_in else None,
-            "check_out_time": attendance.check_out.strftime('%H:%M') if attendance.check_out else None,
+            "meeting_start_time": meeting.start_time,
+            "meeting_end_time": meeting.end_time,
+            "check_in_time": attendance.check_in_time.strftime('%H:%M') if attendance.check_in_time else None,
+            "check_out_time": attendance.check_out_time.strftime('%H:%M') if attendance.check_out_time else None,
             "status": attendance.status
         })
 

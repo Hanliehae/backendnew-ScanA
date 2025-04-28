@@ -1,18 +1,17 @@
 from src.database.config import SessionLocal
-from src.database.models import Attendance, Meeting, StudentClass
+from src.database.models import Attendance, Meeting, ClassStudent as StudentClass
 from datetime import datetime
+from sqlalchemy.orm import joinedload
 
 
 def mark_attendance(meeting_id, student_id, scan_type):
     session = SessionLocal()
 
-    # Pastikan meeting ada
     meeting = session.query(Meeting).filter(Meeting.id == meeting_id).first()
     if not meeting:
         session.close()
         return None, "Meeting not found."
 
-    # Cek apakah mahasiswa terdaftar di kelas meeting
     student_class = session.query(StudentClass).filter(
         StudentClass.student_id == student_id,
         StudentClass.class_id == meeting.class_id
@@ -22,16 +21,15 @@ def mark_attendance(meeting_id, student_id, scan_type):
         session.close()
         return None, "Student is not assigned to this class."
 
-    # Cek apakah sudah ada attendance record
     attendance = session.query(Attendance).filter(
         Attendance.meeting_id == meeting_id,
-        Attendance.student_id == student_id
+        Attendance.class_student_id == student_class.id
     ).first()
 
     if not attendance:
         attendance = Attendance(
             meeting_id=meeting_id,
-            student_id=student_id
+            class_student_id=student_class.id
         )
         session.add(attendance)
         session.commit()
@@ -49,9 +47,8 @@ def mark_attendance(meeting_id, student_id, scan_type):
         session.close()
         return None, "Invalid scan_type. Must be 'in' or 'out'."
 
-    # Update status
     if attendance.check_in_time:
-        attendance.status = "Present"
+        attendance.status = "Hadir"
 
     session.commit()
     session.refresh(attendance)
@@ -63,7 +60,9 @@ def mark_attendance(meeting_id, student_id, scan_type):
 def get_attendance_by_meeting(meeting_id):
     session = SessionLocal()
 
-    attendances = session.query(Attendance).filter(
+    attendances = session.query(Attendance).options(
+        joinedload(Attendance.class_student)
+    ).filter(
         Attendance.meeting_id == meeting_id
     ).all()
 

@@ -27,8 +27,8 @@ def create_meeting():
         "meeting": {
             "id": meeting.id,
             "date": meeting.date.strftime('%Y-%m-%d'),
-            "start_time": meeting.start_time.strftime('%H:%M'),
-            "end_time": meeting.end_time.strftime('%H:%M')
+            "start_time": meeting.start_time,
+            "end_time": meeting.end_time
         }
     }, 201
 
@@ -40,8 +40,8 @@ def get_meetings_by_class(class_id):
     meeting_list = [{
         "id": m.id,
         "date": m.date.strftime('%Y-%m-%d'),
-        "start_time": m.start_time.strftime('%H:%M'),
-        "end_time": m.end_time.strftime('%H:%M')
+        "start_time": m.start_time,
+        "end_time": m.end_time
     } for m in meetings]
 
     return {"meetings": meeting_list}, 200
